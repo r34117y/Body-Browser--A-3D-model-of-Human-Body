@@ -47,16 +47,18 @@ var SCREEN_WIDTH = window.innerWidth;
 				container.appendChild( renderer.domElement );
 
 				// CHARACTER
-
+				
 				character = new THREE.UCSCharacter();
 				character.onLoadComplete = function() {
 					console.log( "Load Complete" );
 					console.log( character.numSkins + " skins and " + character.numMorphs + " morphtargets loaded." );
+					
 					gui = new dat.GUI();
 					setupSkinsGUI();
 					gui.width = 300;
 					gui.open();
 				}
+				
 				
 				var loader = new THREE.XHRLoader();
 				loader.load("models/skinned/UCS_config.json", function ( text ) {
@@ -96,7 +98,7 @@ var SCREEN_WIDTH = window.innerWidth;
 				}
 				
 				for ( var i = 0; i < character.numSkins; i++ ) {
-					skinGui.add( skinConfig, character.skins[i].name );
+					skinGui.add( skinConfig, character.skins[i].name);
 				}
 				
 				skinGui.open();
@@ -127,6 +129,9 @@ var SCREEN_WIDTH = window.innerWidth;
 
 			function animate() {
 
+				
+				character.update();
+		
 				requestAnimationFrame( animate );
 
 				controls.update();

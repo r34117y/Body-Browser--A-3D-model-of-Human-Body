@@ -1,7 +1,15 @@
+
 THREE.UCSCharacter = function() {
 
 	var scope = this;
-	
+
+	const armonia_1d_color_cuantizada_instance = new p5(armonia_1d_color_cuantizada);
+	armonia_1d_color_cuantizada_instance.noLoop();
+	const armonia_angular_cuadricula_instance = new p5(armonia_angular_cuadricula);
+	armonia_angular_cuadricula_instance.noLoop();
+
+	let currentInstance;
+
 	var mesh;
 	var bodyd = [];
 	bodyd[0] =  '';
@@ -73,29 +81,87 @@ THREE.UCSCharacter = function() {
 
 	};
 	
+	function updateInstanceTexture(instance) {
+		if (!instance) {
+			return;
+		}
+		const canvas = instance.canvas;
+		if (canvas) {
+			const texture = new THREE.Texture(canvas);
+			// Set texture properties if needed, e.g., texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+			const canvasMaterial = new THREE.MeshBasicMaterial({
+				map: texture,
+				skinning: true,
+				morphTargets: true,
+				wrapAround: true,
+			});
+
+			if (mesh) {
+				mesh.material = canvasMaterial;
+				texture.needsUpdate = true;
+			}
+		}
+		instance.loop();
+	}
+
+	function applySketchTexture(index) {
+		let instance;
+		switch (index) {
+			case 1:
+				instance = armonia_1d_color_cuantizada_instance;
+				break;
+			case 2:
+				instance = armonia_angular_cuadricula_instance;
+				break;
+		}
+		if (!instance) {
+			return;
+		}
+		if (currentInstance) {
+			currentInstance.noLoop();
+		}
+		currentInstance = instance;
+		updateInstanceTexture(currentInstance);
+	} 
+
 	this.setSkin = function( index ) {
-		if(!this.infodis){
-			this.infodis = 1;
-		}else{
-			$("#info").html(bodyd[index]);
-			if(index !=0){
-			if( $('#volumeimg').is(':empty')){
-			$("#volumeimg").show();
-			$("#volumeimg").append( "click for audio<img title='click for audio' type='image' id='icon' src='images/index.png' onclick='callme()' ></img>"+ "<img title='click for audio' type='image' id='iconstop' src='images/iconstop.png' onclick='stopspeak()' ></img>");	
+		if (index == 1 || index == 2) {
+			applySketchTexture(index);
 		}
+		else {
+			if (currentInstance) {
+				currentInstance.noLoop();
+			}
+
+			currentInstance = null;
+			if(!this.infodis){
+				this.infodis = 1;
+			}else{
+				$("#info").html(bodyd[index]);
+				if(index !=0){
+				if( $('#volumeimg').is(':empty')){
+				$("#volumeimg").show();
+				$("#volumeimg").append( "click for audio<img title='click for audio' type='image' id='icon' src='images/index.png' onclick='callme()' ></img>"+ "<img title='click for audio' type='image' id='iconstop' src='images/iconstop.png' onclick='stopspeak()' ></img>");	
+			}
+			}
+			else{
+			$("#volumeimg").empty();
+			$("#volumeimg").hide();	
+			}
+			}
+			console.log('UCSCharacter setSkin ' + index );
+			
+			if ( mesh && scope.materials ) {
+				mesh.material = scope.materials[ index ];
+			}
 		}
-		else{
-		$("#volumeimg").empty();
-		$("#volumeimg").hide();	
-		}
-		}
-		console.log('UCSCharacter setSkin' + index );
 		
-		if ( mesh && scope.materials ) {
-			mesh.material = scope.materials[ index ];
-		}
 	};
 	
+	this.update = function () {
+		updateInstanceTexture(currentInstance);
+	}
+
 	this.updateMorphs = function( influences ) {
 		console.log('UCSCharacter updateMorphs');
 		if ( mesh ) {
@@ -104,12 +170,10 @@ THREE.UCSCharacter = function() {
 			}
 		}
 	}
-	
+
 	function loadTextures( baseUrl, textureUrls ) {
-		console.log('loadTextures UCSCharacter');
 		var mapping = THREE.UVMapping;
 		var textures = [];
-
 		for ( var i = 0; i < textureUrls.length; i ++ ) {
 
 			textures[ i ] = THREE.ImageUtils.loadTexture( baseUrl + textureUrls[ i ], mapping, scope.checkLoadComplete );
@@ -139,7 +203,6 @@ THREE.UCSCharacter = function() {
 			} );
 
 		}
-		
 		return materials;
 	}
 
