@@ -10,8 +10,8 @@ const armonia_angular_cuadricula = function (p) {
 
 	p.setup = function() {
 	  p.pixelDensity(1);
-	  p.width = 500;
-	  p.height = 500;
+	  p.width = 512;
+	  p.height = 512;
 	  p.createCanvas(p.width, p.height);
 	  
 	  p.background(180);

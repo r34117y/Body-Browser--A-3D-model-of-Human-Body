@@ -15,14 +15,12 @@ const armonia_1d_color_cuantizada = function (p) {
 
 	p.setup = function() {
 	  p.pixelDensity(1);
-	  p.width = 500;
-	  p.height = 500;
-	  let cnv = p.createCanvas(p.width, p.height);
-	  console.log("setup  w: " + p.width + " h: " + p.height);
+	  p.width = 512;
+	  p.height = 512;
+	  p.createCanvas(p.width, p.height);
 	 
 	  p.background(180);
 	  p.loadPixels();
-	  console.log("setup");
 	  preprocess();
 	}
 
